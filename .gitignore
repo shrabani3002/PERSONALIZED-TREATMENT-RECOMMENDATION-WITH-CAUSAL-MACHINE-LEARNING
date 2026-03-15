@@ -1,5 +1,28 @@
+# Virtual Environment
 venv/
-__pycache__/
-.ipynb_checkpoints/
 .env
+
+# Python cache
+__pycache__/
 *.pyc
+*.pyo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Dataset (usually large)
+data/
+*.csv
+*.xlsx
+
+# ML generated models
+models/
+*.pkl
+*.joblib
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
