@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block title %}Patient Profile{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/patientprofile.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-wrapper">
+
+    <div class="profile-card">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="profile-left">
+
+            <img src="{{ url_for('static', filename='images/patient.png') }}" class="profile-img">
+
+            <p class="patient-role">Patient</p>
+
+            <div class="rating">
+                Health Score: <b>8.6</b>
+            </div>
+
+            <hr>
+
+            <div class="medical-info">
+
+                <h4>Medical Info</h4>
+
+                <p><strong>Blood Group:</strong> {{ patient.blood_type }}</p>
+
+                <p><strong>Allergies:</strong> {{ patient.allergies }}</p>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+        <div class="profile-right">
+
+            <div class="profile-header">
+
+                <h2>{{ patient.user.full_name }}</h2>
+
+
+                <div class="profile-actions">
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="btn message-btn">
+                        Dashboard
+                    </a>
+                    <button class="btn message-btn">Edit Profile</button>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="profile-section">
+
+                <h4>Contact Information</h4>
+
+                <div class="info-grid">
+
+                    <p><strong>Phone:</strong> {{ patient.phone }}</p>
+
+                    <p><strong>Email:</strong> {{ patient.user.email }}</p>
+
+                    <p><strong>Address:</strong> {{ patient.address }}</p>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="profile-section">
+
+                <h4>Basic Information</h4>
+
+                <div class="info-grid">
+
+                    <p><strong>Age:</strong> {{ (now.year - patient.dob.year) if patient.dob else "" }}</p>
+
+                    <p><strong>Gender:</strong> {{ patient.gender }}</p>
+
+                    <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

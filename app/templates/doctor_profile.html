@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctorprofile.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-container">
+
+    <div class="profile-card">
+
+        <!-- LEFT SIDE IMAGE -->
+        <div class="profile-image">
+
+            <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor">
+
+            <div class="profile-name">
+                <h2>{{ doctor.user.full_name }}</h2>
+                <p>{{ doctor.specialization }}</p>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE DETAILS -->
+        <div class="profile-info">
+
+            <h3>Profile</h3>
+
+            <h2>{{ doctor.user.full_name }}</h2>
+            <p class="role">{{ doctor.specialization }}</p>
+
+            <!-- DASHBOARD BUTTON -->
+            <a href="{{ url_for('dashboard.dashboard') }}" class="dashboard-btn">
+                Go to Dashboard
+            </a>
+
+            <p>
+                <strong>Hospital:</strong> {{ doctor.hospital_name }}
+            </p>
+
+            <p>
+                <strong>Medical Degree:</strong> {{ doctor.medical_degree }}
+            </p>
+
+            <div class="speciality">
+
+                <h4>Speciality</h4>
+
+                <span>{{ doctor.specialization }}</span>
+
+            </div>
+
+
+            <div class="details">
+
+                <p><strong>Experience:</strong> {{ doctor.experience }} Years</p>
+
+                <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+
+                <p><strong>Email:</strong> {{ doctor.user.email }}</p>
+
+            </div>
+
+
+            <div class="contact">
+
+                <h4>Contact</h4>
+
+                <p>{{ doctor.phone }}</p>
+
+                <p>{{ doctor.user.email }}</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

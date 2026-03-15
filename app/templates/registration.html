@@ -1,0 +1,202 @@
+{% extends "layout.html" %}
+{% block title %}Register - HealthChain{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width:700px; margin-top:60px;">
+    <div class="card shadow-sm p-4" style="border-radius:12px;">
+
+
+    <h2 class="text-center mb-4">Register</h2>
+
+    <form method="POST" action="{{ url_for('auth.register') }}">
+
+        <div class="row g-3">
+
+            <!-- Full Name -->
+            <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+
+            <!-- Role -->
+            <div class="col-md-6">
+                <label class="form-label">Role</label>
+                <select name="user_type" id="user_type" class="form-select" required>
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Doctor</option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <!-- Doctor Fields -->
+        <div id="doctorFields" class="d-none mt-4">
+
+            <hr>
+            <h5 class="mb-3">Doctor Information</h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">License Number</label>
+                    <input type="text" name="license_number" class="form-control doctor-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Specialization</label>
+                    <input type="text" name="specialization" class="form-control doctor-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Hospital Name</label>
+                    <input type="text" name="hospital_name" class="form-control doctor-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Medical Degree</label>
+                    <input type="text" name="medical_degree" class="form-control doctor-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Years of Experience</label>
+                    <input type="number" name="experience" class="form-control doctor-input" min="0">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" class="form-control doctor-input">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Patient Fields -->
+        <div id="patientFields" class="d-none mt-4">
+
+            <hr>
+            <h5 class="mb-3">Patient Information</h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" name="dob" class="form-control patient-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select patient-input">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Blood Type</label>
+                    <select name="blood_type" class="form-select patient-input">
+                        <option value="" disabled selected>Select Blood Type</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" class="form-control patient-input">
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Allergies</label>
+                    <textarea name="allergies" class="form-control patient-input"></textarea>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control patient-input"></textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary w-100 mt-4">
+            Register
+        </button>
+
+    </form>
+
+
+    <p class="text-center mt-3">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Login here</a>
+    </p>
+
+</div>
+
+
+</div>
+
+<script>
+
+const roleSelect = document.getElementById("user_type");
+const doctorFields = document.getElementById("doctorFields");
+const patientFields = document.getElementById("patientFields");
+
+const doctorInputs = document.querySelectorAll(".doctor-input");
+const patientInputs = document.querySelectorAll(".patient-input");
+
+roleSelect.addEventListener("change", function () {
+
+    // hide all
+    doctorFields.classList.add("d-none");
+    patientFields.classList.add("d-none");
+
+    // remove required
+    doctorInputs.forEach(i => i.removeAttribute("required"));
+    patientInputs.forEach(i => i.removeAttribute("required"));
+
+    if (this.value === "doctor") {
+
+        doctorFields.classList.remove("d-none");
+        doctorInputs.forEach(i => i.setAttribute("required","required"));
+
+    }
+
+    if (this.value === "patient") {
+
+        patientFields.classList.remove("d-none");
+        patientInputs.forEach(i => i.setAttribute("required","required"));
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

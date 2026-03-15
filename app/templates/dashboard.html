@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="doctor-profile">
+            <img src="{{ url_for('static', filename='images/user.png') }}">
+            <h3>{{ user.full_name }}</h3>
+
+            {% if user.user_type == "doctor" %}
+                <p>{{ doctor.specialization }}</p>
+            {% else %}
+                <p>Patient</p>
+            {% endif %}
+        </div>
+
+        <ul class="menu">
+            <li class="active"><i class="fa fa-home"></i> Dashboard</li>
+
+            {% if user.user_type == "doctor" %}
+                <li><i class="fa fa-user"></i> Patients</li>
+                <li><i class="fa fa-calendar"></i> Appointments</li>
+                <li><i class="fa fa-chart-line"></i> Statistics</li>
+            {% endif %}
+
+            {% if user.user_type == "patient" %}
+                <li><i class="fa fa-file-medical"></i> Medical Records</li>
+                <li><i class="fa fa-calendar-check"></i> My Appointments</li>
+                <li><i class="fa fa-heartbeat"></i> Risk Analysis</li>
+            {% endif %}
+
+            <li><i class="fa fa-user-circle"></i> Profile</li>
+            <li><i class="fa fa-cog"></i> Settings</li>
+            <li><i class="fa fa-sign-out"></i> Logout</li>
+        </ul>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <h2>Dashboard</h2>
+
+        <!-- DOCTOR DASHBOARD -->
+        {% if user.user_type == "doctor" %}
+
+        <div class="stats">
+
+            <div class="card">
+                <i class="fa fa-users"></i>
+                <h3>0</h3>
+                <p>Total Patients</p>
+            </div>
+
+            <div class="card">
+                <i class="fa fa-clock"></i>
+                <h3>0</h3>
+                <p>Appointments Today</p>
+            </div>
+
+        </div>
+
+        <div class="table-card">
+
+            <h3>Recent Patients</h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Blood Group</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td colspan="5" style="text-align:center;">
+                            No patients yet
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endif %}
+
+
+
+        <!-- PATIENT DASHBOARD -->
+        {% if user.user_type == "patient" %}
+
+        <div class="stats">
+
+            <div class="card">
+                <i class="fa fa-heartbeat"></i>
+                <h3>Normal</h3>
+                <p>Current Health</p>
+            </div>
+
+            <div class="card">
+                <i class="fa fa-calendar-check"></i>
+                <h3>0</h3>
+                <p>Appointments</p>
+            </div>
+
+        </div>
+
+        <div class="table-card">
+
+            <h3>My Medical Records</h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Diagnosis</th>
+                        <th>Status</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td colspan="5" style="text-align:center;">
+                            No records yet
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

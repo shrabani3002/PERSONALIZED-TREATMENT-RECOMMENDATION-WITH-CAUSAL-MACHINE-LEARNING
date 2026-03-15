@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <!-- Features / Actions Section -->
+<section class="features-section">
+    <div class="feature-box">
+        <h3>Risk Analysis</h3>
+        <p>Check patient risk factors for cardiovascular diseases or other health issues based on medical history and metrics.</p>
+        <a href="{{ url_for('risk_bp.risk_analysis') }}"><button>Go to Risk Analysis</button></a>
+    </div>
+    <!-- You can add more feature boxes here later -->
+</section>
+    
+</div>
+<!-- 
+    <div class="search-box">
+        <h2>Find Patients</h2>
+        <form method="GET" action="#">
+            <input type="text" name="keyword" placeholder="Search Patients..." value="{{ keyword }}">
+            <button type="submit">Search</button>
+        </form>
+    </div> -->
+
+
+<!-- About Us Section -->
+<section class="about-us">
+    <div class="about-content">
+        <div class="about-text">
+            <h2>About Our Healthcare System</h2>
+            <p>Our platform connects doctors and patients seamlessly. Doctors can easily search patient profiles, track their health metrics, and provide personalized care recommendations. Patients can access their medical history securely and receive guidance from healthcare professionals.</p>
+            <div class="values">
+                <h3>Our Mission & Values</h3>
+                <ul>
+                    <li>Reliable patient data management</li>
+                    <li>Secure and private medical information</li>
+                    <li>Easy access to patient health metrics</li>
+                    <li>Improving healthcare outcomes with data-driven insights</li>
+                </ul>
+            </div>
+        </div>
+        <div class="about-image">
+            <img  >
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Contact Us Section -->
+<section class="contact-us">
+    <div class="contact-container">
+        <div class="contact-text">
+            <h2>Contact Us</h2>
+            <p>If you have questions or need support, our team is here to help. Reach out to us anytime!</p>
+            <ul class="contact-info">
+                <li><strong>Email:</strong> support@healthcaresystem.com</li>
+                <li><strong>Phone:</strong> +91 98765 43210</li>
+                <li><strong>Address:</strong> 123 Health Street, Wellness City, India</li>
+            </ul>
+        </div>
+        <div class="contact-form">
+            <form action="#" method="post">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}

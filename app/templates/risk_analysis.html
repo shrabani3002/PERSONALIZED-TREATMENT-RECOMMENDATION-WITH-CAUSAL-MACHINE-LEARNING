@@ -1,0 +1,267 @@
+{% extends "layout.html" %}
+{% block title %}Patient Risk Analysis — Causal ML{% endblock %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/riskanalysis.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>🩺 Patient Risk Analysis</h1>
+    <p>Enter clinical data to compute 10-year CHD risk with causal treatment effect estimation</p>
+  </div>
+
+  {% if error %}
+  <div class="alert-error">❌ {{ error }}</div>
+  {% endif %}
+
+  <div class="layout">
+
+    <!-- ── LEFT: Input Form ──────────────────────────────────────────────── -->
+    <div>
+      <div class="card">
+        <div class="card-label">Patient Clinical Data</div>
+
+        <form method="POST" action="{{ url_for('risk_bp.risk_analysis') }}">
+
+          <div class="form-section">
+            <div class="form-section-title">Demographics</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Age (years)</label>
+                <input type="number" name="age" min="20" max="100"
+                  value="{{ result.patient.age|int if result else 50 }}" required>
+              </div>
+              <div class="field">
+                <label>Sex</label>
+                <select name="sex">
+                  <option value="1" {{ 'selected' if result and result.patient.male==1 }}>Male</option>
+                  <option value="0" {{ 'selected' if result and result.patient.male==0 }}>Female</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Lifestyle</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Cigarettes / Day</label>
+                <input type="number" name="cigsPerDay" min="0" max="60"
+                  value="{{ result.patient.cigsPerDay|int if result else 0 }}" required>
+              </div>
+              <div class="field">
+                <label>BMI (kg/m²)</label>
+                <input type="number" name="BMI" step="0.1" min="10" max="60"
+                  value="{{ '%.1f'|format(result.patient.BMI) if result else 25.0 }}" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Medical History</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>BP Medication</label>
+                <select name="BPMeds">
+                  <option value="0" {{ 'selected' if result and result.patient.BPMeds==0 }}>No</option>
+                  <option value="1" {{ 'selected' if result and result.patient.BPMeds==1 }}>Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Previous Stroke</label>
+                <select name="prevalentStroke">
+                  <option value="0" {{ 'selected' if result and result.patient.prevalentStroke==0 }}>No</option>
+                  <option value="1" {{ 'selected' if result and result.patient.prevalentStroke==1 }}>Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Hypertension</label>
+                <select name="prevalentHyp">
+                  <option value="0" {{ 'selected' if result and result.patient.prevalentHyp==0 }}>No</option>
+                  <option value="1" {{ 'selected' if result and result.patient.prevalentHyp==1 }}>Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Diabetes</label>
+                <select name="diabetes">
+                  <option value="0" {{ 'selected' if result and result.patient.diabetes==0 }}>No</option>
+                  <option value="1" {{ 'selected' if result and result.patient.diabetes==1 }}>Yes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Clinical Measurements</div>
+            <div class="form-grid form-grid-3">
+              <div class="field">
+                <label>Total Cholesterol (mg/dL)</label>
+                <input type="number" name="totChol" step="0.1"
+                  value="{{ '%.0f'|format(result.patient.totChol) if result else 200 }}" required>
+              </div>
+              <div class="field">
+                <label>Systolic BP (mmHg)</label>
+                <input type="number" name="sysBP" step="0.1"
+                  value="{{ '%.0f'|format(result.patient.sysBP) if result else 120 }}" required>
+              </div>
+              <div class="field">
+                <label>Diastolic BP (mmHg)</label>
+                <input type="number" name="diaBP" step="0.1"
+                  value="{{ '%.0f'|format(result.patient.diaBP) if result else 80 }}" required>
+              </div>
+              <div class="field">
+                <label>Heart Rate (bpm)</label>
+                <input type="number" name="heartRate"
+                  value="{{ result.patient.heartRate|int if result else 72 }}" required>
+              </div>
+              <div class="field">
+                <label>Glucose (mg/dL)</label>
+                <input type="number" name="glucose" step="0.1"
+                  value="{{ '%.0f'|format(result.patient.glucose) if result else 80 }}" required>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <span>🔬</span> Compute Risk &amp; Causal Effect
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Results ────────────────────────────────────────────────── -->
+    <div>
+
+      {% if result %}
+
+      <!-- Risk Score -->
+      <div class="risk-meter {{ result.risk_color }} animate-in">
+        <div class="risk-label">10-Year CHD Risk Probability</div>
+        <div class="risk-pct">{{ result.probability }}<sup>%</sup></div>
+        <div class="risk-name">{{ result.risk_level }}</div>
+        <div class="risk-bar-wrap">
+          <div class="risk-bar-fill" ></div>
+        </div>
+      </div>
+
+      <!-- ITE Causal Effect -->
+      {% if result.ensemble_ite is not none %}
+      <div class="ite-card {{ result.ite_color }} animate-in">
+        <div class="ite-heading">⚙️ Causal Treatment Effect (ITE — Smoking → CHD)</div>
+        <div class="ite-value {{ result.ite_color }}">
+          {{ '%+.4f'|format(result.ensemble_ite) }}
+          <span style="font-size:1rem;font-weight:600;opacity:.7;">
+            ({{ '%+.1f'|format(result.ensemble_ite * 100) }}%)
+          </span>
+        </div>
+        <div class="ite-text">{{ result.ite_text }}</div>
+        {% if result.ite_breakdown %}
+        <div class="ite-breakdown">
+          {% for learner, val in result.ite_breakdown.items() %}
+            {% if val is not none %}
+            <span class="ite-chip">{{ learner }}: {{ '%+.4f'|format(val) }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Risk Factors -->
+      <div class="card animate-in">
+        <div class="card-label">Risk Factor Analysis</div>
+        <div class="factor-list">
+          {% for f in result.factors %}
+          <div class="factor-row {{ f.status }}">
+            <div class="factor-icon">{{ f.icon }}</div>
+            <div class="factor-body">
+              <div class="factor-top">
+                <span class="factor-name">{{ f.factor }}</span>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                  <span class="factor-value">{{ f.value }}</span>
+                  <span class="factor-impact {{ f.status }}">{{ f.impact }}</span>
+                </div>
+              </div>
+              <div class="factor-detail">{{ f.detail }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="card animate-in">
+        <div class="card-label">Clinical Recommendations</div>
+        <div class="rec-list">
+          {% for rec in result.recommendations %}
+          <div class="rec-item">
+            <div class="rec-arrow">→</div>
+            <span>{{ rec }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Explainer Banner -->
+      <div class="explainer-banner animate-in">
+        <div class="eb-title">💡 Risk Probability vs Causal Effect — What's the difference?</div>
+        <div class="eb-cols">
+          <div class="eb-col">
+            <div class="eb-col-title" style="color:#2563eb;">Risk Probability (ML Model)</div>
+            <div class="eb-col-body">
+              P(CHD = 1 | patient features). A <strong>correlation-based</strong> score.
+              High-risk patients share features with CHD patients in training data.
+              Does <em>not</em> tell you why or what causes the risk.
+            </div>
+          </div>
+          <div class="eb-col">
+            <div class="eb-col-title" style="color:#7c3aed;">ITE — Individual Treatment Effect (Causal)</div>
+            <div class="eb-col-body">
+              E[CHD if smoke − CHD if not smoke | <em>this</em> patient].
+              A <strong>causal estimate</strong> — how much smoking
+              <em>changes</em> this specific patient's CHD risk
+              after controlling for all confounders.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- Empty state -->
+      <div class="empty-state">
+        <div class="empty-icon">🩺</div>
+        <div class="empty-title">Enter patient data and click Compute</div>
+        <div style="font-size:.875rem;margin-top:.25rem;">You will see:</div>
+        <ul class="empty-list">
+          <li>✓ 10-year CHD risk probability (%)</li>
+          <li>✓ Per-factor breakdown with clinical explanation</li>
+          <li>✓ Individual Treatment Effect — smoking → CHD (causal)</li>
+          <li>✓ S-Learner, T-Learner, X-Learner ITE estimates</li>
+          <li>✓ Personalised clinical recommendations</li>
+        </ul>
+      </div>
+
+      {% endif %}
+
+    </div><!-- /right -->
+  </div><!-- /layout -->
+</div>
+
+<script>
+// Animate the risk bar on load
+document.addEventListener('DOMContentLoaded', () => {
+  const bar = document.querySelector('.risk-bar-fill');
+  if (bar) {
+    const w = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = w; }, 100);
+  }
+});
+</script>
+{% endblock %}
